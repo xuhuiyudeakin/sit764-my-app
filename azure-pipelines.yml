@@ -12,7 +12,7 @@ variables:
   azureSubscription: 'db958575-3ee0-47c8-ad05-be76c27727f0'
 
   # Web app name
-  webAppName: 'xuhuiyuWebApp'
+  webAppName: 'xuhuiyu'
   
   # Environment name
   environmentName: 'staging'
