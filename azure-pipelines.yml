@@ -3,7 +3,7 @@ pool:
 
 variables:
   tagName: 'latest'
-  imageName: '$(huiyuxu)/sit764-my-app:$(tagName)'
+  imageName: 'huiyuxu/sit764-my-app:$(tagName)'
 
 steps:
 
@@ -11,7 +11,7 @@ steps:
   displayName: 'Docker build Script'
 
 - script: |
-    docker login -u $(huiyuxu) -p $(xhy.318524)
+    docker login -u huiyuxu -p xhy.318524
     docker push $(imageName)
   displayName: 'Push docker image'
 
