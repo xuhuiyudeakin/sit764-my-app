@@ -1,71 +1,73 @@
-# Node.js React Web App to Linux on Azure
-# Build a Node.js React app and deploy it to Azure as a Linux web app.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
-trigger:
-- master
+pool:
+  vmImage: 'Ubuntu 18.04'
 
 variables:
+  tagName: 'latest'
+  imageName: '$(dockerId)/sit764-my-app:$(tagName)'
 
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: 'db958575-3ee0-47c8-ad05-be76c27727f0'
+steps:
 
-  # Web app name
-  webAppName: 'xuhuiyu'
-  
-  # Environment name
-  environmentName: 'staging'
+- script: docker build -f Dockerfile -t $(imageName) .
+  displayName: 'Docker build Script'
 
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+- script: |
+    docker login -u $(dockerId) -p $(pswd)
+    docker push $(imageName)
+  displayName: 'Push docker image'
 
-stages:
-- stage: Build
-  displayName: Build stage
-  jobs:  
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
+- task: SSH@0
+  displayName: 'Run shell inline on remote machine'
+  inputs:
+    sshEndpoint: 'xuhuiyu123'
+    runOptions: inline
 
-    steps:
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
-
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      artifact: drop
-
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: $(environmentName)
-    pool: 
-      vmImage: $(vmImageName)
-    strategy:
-      runOnce:
-        deploy:
-          steps:            
-          - task: AzureRmWebAppDeployment@4
-            displayName: 'Azure App Service Deploy: '
-            inputs:
-              azureSubscription: $(azureSubscription)
-              appType: webAppLinux
-              WebAppName: $(webAppName)
-              packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-              RuntimeStack: 'NODE|10.10'
-              StartupCommand: 'npm run start'
-              ScriptType: 'Inline Script'
-              InlineScript: |
-                npm install
-                npm run build --if-present
+    inline: |
+     containers=$(docker ps -q --filter name=sit764-my-app)
+     if test -n "$containers"; then
+      docker stop $(docker ps -q --filter name=sit764-my-app) >> /dev/null 2>&1
+      rc=$?
+      if [[ $rc != 0 ]];
+      then
+       echo 'failed to stop container...'
+       exit $rc;
+      fi
+     fi
+     
+     containers1=$(docker ps -q -a --filter name=sit764-my-app)
+     if test -n "$containers1"; then
+      docker rm $(docker ps -q -a --filter name=sit764-my-app) >> /dev/null 2>&1
+      rc=$?
+      if [[ $rc != 0 ]];
+      then
+       echo 'failed to remove container...'
+       exit $rc;
+      fi
+     fi
+     
+     
+     docker pull $(imageName) >> /dev/null 2>&1
+     rc=$?
+     if [[ $rc != 0 ]];
+     then
+      echo 'failed to pull container...'
+      exit $rc;
+     fi
+     
+     docker run -d -p 7010:80 --name sit764-my-app --link redis:redis-server $(imageName) >> /dev/null 2>&1
+     rc=$?
+     if [[ $rc != 0 ]];
+     then
+      echo 'failed to run container...'
+      exit $rc;
+     fi
+     
+     danglings=$(docker images -f "dangling=true" -q)
+     if test -n "$danglings"; then
+      docker rmi $(docker images -f "dangling=true" -q) >> /dev/null 2>&1
+      rc=$?
+      if [[ $rc != 0 ]];
+      then
+       echo 'failed to remove danglings container...'
+       exit $rc;
+      fi
+     fi
