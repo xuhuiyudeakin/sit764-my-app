@@ -24,7 +24,7 @@ steps:
     inline: |
      containers=$(sudo docker ps -q --filter name=sit764-my-app)
      if test -n "$containers"; then
-      docker stop $(sudo docker ps -q --filter name=sit764-my-app) >> /dev/null 2>&1
+      sudo docker stop $(sudo docker ps -q --filter name=sit764-my-app) >> /dev/null 2>&1
       rc=$?
       if [[ $rc != 0 ]];
       then
@@ -35,7 +35,7 @@ steps:
      
      containers1=$(sudo docker ps -q -a --filter name=sit764-my-app)
      if test -n "$containers1"; then
-      docker rm $(sudo docker ps -q -a --filter name=sit764-my-app) >> /dev/null 2>&1
+      sudo docker rm $(sudo docker ps -q -a --filter name=sit764-my-app) >> /dev/null 2>&1
       rc=$?
       if [[ $rc != 0 ]];
       then
