@@ -53,7 +53,7 @@ steps:
       exit $rc;
      fi
      
-     sudo docker run -d -p 7010:80 --name sit764-my-app --link redis:redis-server $(imageName) >> /dev/null 2>&1
+     sudo docker run -d -p 7010:80 --name sit764-my-app $(imageName) >> /dev/null 2>&1
      rc=$?
      if [[ $rc != 0 ]];
      then
