@@ -53,13 +53,7 @@ steps:
       exit $rc;
      fi
      
-     sudo docker run -d -p 7010:80  $(imageName) >> /dev/null 2>&1
-     rc=$?
-     if [[ $rc != 0 ]];
-     then
-      echo 'failed to run container...'
-      exit $rc;
-     fi
+     
      
      danglings=$(sudo docker images -f "dangling=true" -q)
      if test -n "$danglings"; then
