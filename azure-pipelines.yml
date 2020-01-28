@@ -55,13 +55,4 @@ steps:
      
      
      
-     danglings=$(sudo docker images -f "dangling=true" -q)
-     if test -n "$danglings"; then
-      sudo docker rmi $(sudo docker images -f "dangling=true" -q) >> /dev/null 2>&1
-      rc=$?
-      if [[ $rc != 0 ]];
-      then
-       echo 'failed to remove danglings container...'
-       exit $rc;
-      fi
-     fi
+   
