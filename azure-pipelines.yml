@@ -53,7 +53,7 @@ steps:
       exit $rc;
      fi
      
-     docker run -d -p 7010:80 --name sit764-my-app --link redis:redis-server $(imageName) >> /dev/null 2>&1
+     sudo docker run -d -p 7010:80 --name sit764-my-app --link redis:redis-server $(imageName) >> /dev/null 2>&1
      rc=$?
      if [[ $rc != 0 ]];
      then
@@ -63,7 +63,7 @@ steps:
      
      danglings=$(docker images -f "dangling=true" -q)
      if test -n "$danglings"; then
-      docker rmi $(docker images -f "dangling=true" -q) >> /dev/null 2>&1
+      sudo docker rmi $(docker images -f "dangling=true" -q) >> /dev/null 2>&1
       rc=$?
       if [[ $rc != 0 ]];
       then
