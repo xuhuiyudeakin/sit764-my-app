@@ -5,20 +5,20 @@ MAINTAINER xuhuiyudeakin
 #WORKDIR '/app'
 #COPY package.json .
 #COPY . . 
-#ÔËĞĞ±àÒëÃüÁî
+#è¿è¡Œç¼–è¯‘å‘½ä»¤
 RUN sudo npm run build
 
-#REPLACE CONF Ìæ»»ÅäÖÃÎÄ¼ş
+#REPLACE CONF æ›¿æ¢é…ç½®æ–‡ä»¶
 #ADD /nginx.conf /etc/nginx/nginx.conf
 
-#ADD RESOUCES Ìí¼Ó¾²Ì¬×ÊÔ´
-#ÒÆ³ınginxÄ¬ÈÏ·ÃÎÊÒ³Ãæ
-RUN sudo rm /var/www/html/index.html
-RUN sudo mkdir -p /var/www/html/static
+#ADD RESOUCES æ·»åŠ é™æ€èµ„æº
+#ç§»é™¤nginxé»˜è®¤è®¿é—®é¡µé¢
+RUN  rm /var/www/html/index.html
+RUN  mkdir -p /var/www/html/static
 COPY build/ /var/www/html/static
 
-#EXPOSE Ó³Éä¶Ë¿Ú
+#EXPOSE æ˜ å°„ç«¯å£
 EXPOSE 80
 
-#CMD ÔËĞĞÒÔÏÂÃüÁî
+#CMD è¿è¡Œä»¥ä¸‹å‘½ä»¤
 CMD ["nginx"]
