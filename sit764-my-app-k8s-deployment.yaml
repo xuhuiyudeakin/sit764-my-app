@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sit764-my-app
+  labels:
+    app: sit764-my-app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0 
+  selector:
+    matchLabels:
+      app: sit764-my-app
+  minReadySeconds: 0
+  strategy:
+    type: RollingUpdate 
+    rollingUpdate:
+      maxUnavailable: 1 
+      maxSurge: 1 
+
+  template: 
+    metadata:
+      labels: 
+        app: sit764-my-app
+    
+    spec:
+      containers:
+        - name: sit764-my-app
+          image: huiyuxu/sit764-my-app:latest
+          imagePullPolicy: IfNotPresent 
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          livenessProbe: 
+            httpGet:
+              path: /Health  
+              port: 80  
+            initialDelaySeconds: 60
+            periodSeconds: 60
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sit764-my-app
+spec:
+  selector:
+    app: sit764-my-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 31254
+  type: NodePort
