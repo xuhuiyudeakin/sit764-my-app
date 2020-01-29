@@ -6,7 +6,7 @@ MAINTAINER xuhuiyudeakin
 #COPY package.json .
 #COPY . . 
 #运行编译命令
-RUN sudo npm run build
+RUN  npm run build
 
 #REPLACE CONF 替换配置文件
 #ADD /nginx.conf /etc/nginx/nginx.conf
