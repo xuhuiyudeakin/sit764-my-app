@@ -53,6 +53,12 @@ steps:
       exit $rc;
      fi
      
-     
+   docker run -i -t -d -p 80:80 $(tagName):nginx >> /dev/null 2>&1
+     rc=$?
+     if [[ $rc != 0 ]];
+     then
+      echo 'failed to run container...'
+      exit $rc;
+     fi  
      
    
