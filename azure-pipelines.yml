@@ -1,0 +1,35 @@
+pool:
+  vmImage: 'Ubuntu 18.04'
+
+variables:
+  tagName: 'latest'
+  imageName: 'huiyuxu/sit764-my-app:$(tagName)'
+
+steps:
+
+- script: docker build -f Dockerfile -t $(imageName) .
+  displayName: 'Docker build Script'
+
+- script: |
+    docker login -u huiyuxu -p xhy.318524
+    docker push $(imageName)
+  displayName: 'Push docker image'
+
+- task: SSH@0
+  displayName: 'Run shell inline on remote machine'
+  inputs:
+    sshEndpoint: 'xuhuiyu123'
+    runOptions: inline
+
+    inline: |
+      sudo docker pull $(imageName) >> /dev/null 2>&1
+      rc=$?
+      if [[ $rc != 0 ]];
+      then
+       echo 'failed to pull container...'
+       exit $rc;
+      fi
+      
+      kubectl apply -f sit764-my-app-k8s-deployment.yaml
+      
+      kubectl set image deployment/sit764-my-app-deployment sit764-my-app=$(imageName) --record=true
