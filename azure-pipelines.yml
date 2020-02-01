@@ -32,4 +32,4 @@ steps:
       
       kubectl apply -f sit764-my-app-k8s-deployment.yaml
       
-      kubectl set image deployment/sit764-my-app-deployment sit764-my-app=$(imageName) --record=true
+      kubectl set image deployment/sit764-my-app sit764-my-app=$(imageName) --record=true
