@@ -1,23 +1,23 @@
 FROM ubuntu:18.04
 MAINTAINER xuhuiyudeakin
 
-#设置工作目录
+#璁剧疆宸ヤ綔鐩綍
 COPY . /app
 WORKDIR /app
 
-#安装依赖环境
+#瀹夎渚濊禆鐜
 RUN apt-get update && apt-get install npm -y 
 RUN apt-get install nodejs
 RUN apt-get update && apt-get install nginx -y
 
-#打包编译
+#鎵撳寘缂栬瘧
 RUN npm i
 RUN npm run build
 
-#资源文件配置
+#璧勬簮鏂囦欢閰嶇疆
 RUN rm /usr/share/nginx/html/index.html
 RUN cp -r ./build/* /usr/share/nginx/html/
 
 EXPOSE 80
 
-CMD ["usr/sbin/nginx","-g","daemon off;"]
+CMD nginx
